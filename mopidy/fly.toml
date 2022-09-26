@@ -1,0 +1,24 @@
+# fly.toml file generated for mopidy on 2022-09-24T18:15:02-04:00
+app = "mopidy"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[experimental]
+allowed_public_ports = []
+auto_rollback = true
+
+[mounts]
+destination = "/var/lib/mopidy/data"
+source = "mopidy_data"
+
+[[services]]
+internal_port = 6680
+processes = ["app"]
+protocol = "tcp"
+script_checks = []
+
+[services.concurrency]
+hard_limit = 25
+soft_limit = 20
+type = "connections"
