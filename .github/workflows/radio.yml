@@ -1,0 +1,67 @@
+name: 🚀 Start/stop radio VMs
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: 'Start the VMs?'
+        required: true
+        default: 'stop'
+        type: choice
+        options:
+          - stop
+          - start
+  schedule:
+    # Runs at 5:00 UTC daily
+    - cron: '0 5 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: 🚀 Start/stop VMs (saves monies)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🛫 Set up flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: 👀 Read app name
+        uses: SebRollen/toml-action@v1.0.0
+        id: mopidy
+        with:
+          file: 'mopidy/fly.toml'
+          field: 'app'
+
+      - name: 👀 Read app name
+        uses: SebRollen/toml-action@v1.0.0
+        id: azuracast
+        with:
+          file: 'azuracast/fly.toml'
+          field: 'app'
+
+      - name: 👀 Read app name
+        uses: SebRollen/toml-action@v1.0.0
+        id: navidrome
+        with:
+          file: 'navidrome/fly.toml'
+          field: 'app'
+
+      - name: 🚀 Scale mopidy up/down
+        run: "flyctl scale count ${{ fromJSON('[0, 1]')[github.event.inputs.start == 'start'] || 0 }} --app ${{ steps.mopidy.outputs.value }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🚀 Scale azuracast up/down
+        run: "flyctl scale count ${{ fromJSON('[0, 1]')[github.event.inputs.start == 'start'] || 0 }} --app ${{ steps.azuracast.outputs.value }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🚀 Scale navidrome up/down
+        run: "flyctl scale count ${{ fromJSON('[0, 1]')[github.event.inputs.start == 'start'] || 0 }} --app ${{ steps.navidrome.outputs.value }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
