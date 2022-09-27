@@ -5,14 +5,13 @@ kill_timeout = 5
 processes = []
 
 [env]
-AZURACAST_DC_REVISION = 14
+AZURACAST_DC_REVISION = "14"
 STATION_NAME = "rpg_music"
 
 [experimental]
 allowed_public_ports = []
 auto_rollback = true
 
-# Unfortunately, we can't change azuracast storage directories, so we mount all of var.
 [mounts]
 destination = "/var/lib/mysql"
 source = "data"
@@ -35,8 +34,11 @@ port = 80
 handlers = ["tls", "http"]
 port = 443
 
-[[services.tcp_checks]]
-grace_period = "1s"
-interval = "15s"
-restart_limit = 0
-timeout = "2s"
+# Have to open the icecast port up publicly since tailscale's dns is being
+# overwritten in resolv.conf
+[[services]]
+internal_port = 8005
+protocol = "tcp"
+
+[[services.ports]]
+port = 8005

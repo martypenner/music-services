@@ -1,10 +1,11 @@
 ## Deploying
 
-1. `fly volumes create data --app radio-012a --size 2`
-2. `fly secrets set MYSQL_PASSWORD=`
-3. `fly secrets set MYSQL_ROOT_PASSWORD=`
-4. `fly deploy`
+1. `fly volumes create data --app <your app name> --size 2`
+2. `fly secrets set MYSQL_PASSWORD=<password>`
+3. `fly secrets set MYSQL_ROOT_PASSWORD=<password>`
+4. Change the app name in fly.toml
+5. `fly deploy`
 
-## After restarting
+## After restarting the instance / redeploying
 
-- Upload a new media file (journey_to_the_far_lands.mp3) and restart broadcasting
+- Restart broadcasting
